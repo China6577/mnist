@@ -1,0 +1,6 @@
+# 建议在 ai-common Conda 环境中安装，避免污染全局 Python。
+torch>=2.7,<3
+torchvision>=0.22,<1
+matplotlib>=3.9
+Pillow>=10.0
+Flask>=3.1

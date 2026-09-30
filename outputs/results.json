@@ -1,0 +1,12 @@
+{
+  "device": "cuda",
+  "epochs": 5,
+  "batch_size": 128,
+  "learning_rate": 0.001,
+  "dropout": 0.25,
+  "best_epoch": 5,
+  "best_validation_accuracy": 0.988,
+  "training_seconds": 43.64338409999982,
+  "test_loss": 0.028273122760094704,
+  "test_accuracy": 0.9904
+}

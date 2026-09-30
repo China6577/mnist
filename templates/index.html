@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="在画布手写一个数字，让 PyTorch CNN 实时识别。">
+  <title>CNN 数字实验台</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="lab-shell">
+    <!-- 顶部说明项目名称，并显示后端模型是否已经成功加载。 -->
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">PyTorch · MNIST 学习项目</p>
+        <h1>CNN 数字实验台</h1>
+        <p class="intro">在黑板上写下一个 0～9 的数字，看看卷积神经网络读出了什么。</p>
+      </div>
+      <div class="model-status" aria-label="模型状态">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span>模型已就绪</span>
+        <span class="device">{{ device }}</span>
+      </div>
+    </header>
+
+    <!-- 主工作区分为两步：左边书写，右边读取预测结果。 -->
+    <section class="workspace" aria-label="手写数字识别工具">
+      <!-- 第一步：Canvas 是浏览器提供的可绘图画布，具体书写逻辑在 app.js。 -->
+      <article class="draw-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="step-label">步骤 1</span>
+            <h2>写一个数字</h2>
+          </div>
+          <p>按住鼠标或手指书写</p>
+        </div>
+
+        <div class="canvas-frame">
+          <canvas id="drawingCanvas" width="360" height="360" aria-label="手写数字画布"></canvas>
+          <span class="corner corner-tl" aria-hidden="true"></span>
+          <span class="corner corner-tr" aria-hidden="true"></span>
+          <span class="corner corner-bl" aria-hidden="true"></span>
+          <span class="corner corner-br" aria-hidden="true"></span>
+        </div>
+
+        <div class="actions">
+          <button id="clearButton" class="button button-secondary" type="button">清空重写</button>
+          <button id="predictButton" class="button button-primary" type="button">
+            <span class="button-label">开始识别</span>
+            <span class="button-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+        <p id="message" class="message" role="status" aria-live="polite">尽量写在画布中央，笔画清晰一些。</p>
+      </article>
+
+      <!-- 第二步：aria-live 让辅助阅读工具也能得知预测结果发生了变化。 -->
+      <article class="result-panel" aria-live="polite">
+        <div class="panel-heading">
+          <div>
+            <span class="step-label">步骤 2</span>
+            <h2>查看模型判断</h2>
+          </div>
+          <p>输出为 0～9 的概率</p>
+        </div>
+
+        <div class="prediction-card" id="predictionCard">
+          <p class="prediction-caption">预测数字</p>
+          <p id="predictedDigit" class="predicted-digit" aria-label="等待预测">?</p>
+          <p class="confidence-line">置信度 <strong id="confidence">—</strong></p>
+        </div>
+
+        <div class="probability-section">
+          <div class="probability-heading">
+            <h3>每个数字的可能性</h3>
+            <span>0—9</span>
+          </div>
+          <div id="probabilityList" class="probability-list">
+            <!-- Jinja 在服务器端循环生成数字 0～9 的十条概率记录。 -->
+            {% for digit in range(10) %}
+            <div class="probability-row" data-digit="{{ digit }}">
+              <span class="probability-digit">{{ digit }}</span>
+              <div class="probability-track">
+                <span class="probability-fill" style="width: 0%"></span>
+              </div>
+              <span class="probability-value">0.0%</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 页面底部用一句话解释从笔迹到 CNN 输出的完整数据流程。 -->
+    <footer class="learning-note">
+      <span class="note-mark" aria-hidden="true">i</span>
+      <p><strong>页面背后发生了什么？</strong> 笔迹被裁剪、居中并缩小为 28×28 灰度图，再送入训练好的两层 CNN；模型最后输出十个分数，Softmax 将它们转换为这里看到的概率。</p>
+    </footer>
+  </main>
+
+  <!-- defer 表示先解析页面内容，再执行画布交互代码。 -->
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
